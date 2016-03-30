@@ -1,56 +1,53 @@
 #include "Arduino.h"
+#include <Ticker.h>
+
+#include "globals.h"
+#include "config.h"
+#include "button.h"
 #include "display.h"
 #include "wifi.h"
 #include "web_server.h"
-#include "config.h"
+#include "mdns.h"
+#include "sensors.h"
 
-#define BUTTON 0
+Ticker ticker;
 
-#define buttonPressed false
+bool takeReadingsNow = false;
 
-// Default Settings
-const char *adminPassword = "admin";
-const char *serverName = "brewmonitor";
-
-// Define functions here
-void setupGPIO();
-void setupDataPush();
+void tick() {
+  takeReadingsNow = true;
+}
 
 void setup() {
+
   delay(5000);
   Serial.begin(115200);
 
-  setupGPIO();
+  buttonSetup();
 
-  if(buttonPressed) {
-    delay(2000); // Ideally we should monitor for pin changes, but this will do for now
-    if(buttonPressed) {
-      resetConfiguration();
-    }
-  }
-
-  if(loadConfiguration()) {
-    wifiSetup();
-    setupDataPush();
-  }
-  else {
+  configSetup();
+  
+  if(wifiAP)
     wifiSetupAP();
+  else {
+    wifiSetup();
+    mdnsSetup();
   }
+
+  sensorsSetup();
+
+  ticker.attach(takeReadingsEvery, tick);
 
   webServerSetup();
 }
 
 void loop() {
+  buttonLoop();
   webServerLoop();
+
+  if(takeReadingsNow) {
+    takeReadingsNow = false;
+    sensorsRead();
+  }
 }
-
-void setupGPIO() {
-  pinMode(BUTTON, INPUT_PULLUP);
-  SPIFFS.begin();
-}
-
-void setupDataPush() {
-
-}
-
 

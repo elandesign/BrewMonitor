@@ -3,5 +3,6 @@
   "wifiSSID": "BREWMONITOR",
   "wifiPassword": "",
   "serverName": "brewmonitor",
-  "adminPassword": ""
+  "adminPassword": "beerme",
+  "takeReadingsEvery": 300
 }

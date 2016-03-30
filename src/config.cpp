@@ -1,7 +1,20 @@
 #include "Arduino.h"
 #include "config.h"
+#include "button.h"
+#include "display.h"
 
-bool loadConfiguration() {
+void configSetup() {
+  if(buttonPressed()) {
+    delay(2000); // Ideally we should monitor for pin changes, but this will do for now
+    if(buttonPressed()) {
+      configReset();
+    }
+  }
+  
+  configLoad();
+}
+
+bool configLoad() {
   if(!SPIFFS.exists(CONFIGURATION))
     return false;
 
@@ -19,6 +32,9 @@ bool loadConfiguration() {
   JsonObject& json = jsonBuffer.parseObject(buf.get());
 
   if (json.success()) {
+    if(json.containsKey(CONFIGURATION_WIFI_AP))
+      wifiAP = json[CONFIGURATION_WIFI_AP];
+
     if(json.containsKey(CONFIGURATION_WIFI_SSID))
       wifiSSID = json[CONFIGURATION_WIFI_SSID];
 
@@ -37,7 +53,7 @@ bool loadConfiguration() {
     return false;
 }
 
-void resetConfiguration() {
+void configReset() {
   if(SPIFFS.exists(CONFIGURATION))
     SPIFFS.remove(CONFIGURATION);
 }

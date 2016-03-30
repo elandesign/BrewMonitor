@@ -1,20 +1,35 @@
 #include "Arduino.h"
 #include "web_server.h"
+#include <ArduinoJson.h>
+#include "globals.h"
 
 ESP8266WebServer webServer(80);
 
 void webServerSetup() {
-  // simple HTTP server to see that DNS server is working
-  webServer.onNotFound([]() {
-    String message = "Hello World!\n\n";
-    message += "URI: ";
-    message += webServer.uri();
+  webServer.on("/status.json", handleStatus);
+  webServer.onNotFound(handleNotFound);
 
-    webServer.send(200, "text/plain", message);
-  });
   webServer.begin();
 }
 
 void webServerLoop() {
   webServer.handleClient();
+}
+
+void handleStatus() {
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject& root = jsonBuffer.createObject();
+  String output;
+  
+  root["temperature"] = temperature;
+  root["pressure"] = pressure;
+  root["weight"] = weight;
+
+  root.printTo(output);
+
+  webServer.send(200, "application/json", output);
+}
+
+void handleNotFound() {
+  webServer.send(404, "text/plain", "");
 }

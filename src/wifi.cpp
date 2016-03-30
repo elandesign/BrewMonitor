@@ -1,8 +1,6 @@
 #include "wifi.h"
 #include "display.h"
-
-const char *wifiSSID = "";
-const char *wifiPassword = "";
+#include "globals.h"
 
 /*
  * Connect to the wifi network as specified in the settings
@@ -11,6 +9,7 @@ void wifiSetup() {
   setStatus("Connecting to WiFi");
 
   WiFi.begin(wifiSSID, wifiPassword);
+
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
   }
@@ -30,5 +29,5 @@ void wifiSetupAP() {
   
   WiFi.mode(WIFI_AP);
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-  WiFi.softAP(AP_SSID);
+  WiFi.softAP(wifiSSID);
 }

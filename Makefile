@@ -19,9 +19,12 @@
 
 #=== Project specific definitions: sketch and list of needed libraries
 SRC ?=  src
-LIBS ?= libraries/ArduinoJson \
+LIBS ?= libraries \
 				$(ESP_LIBS)/ESP8266WiFi \
+				$(ESP_LIBS)/ESP8266mDNS \
         $(ESP_LIBS)/ESP8266WebServer \
+        $(ESP_LIBS)/Ticker \
+        $(ESP_LIBS)/Wire \
         src
 
 # Esp8266 Arduino git location
@@ -37,7 +40,7 @@ FLASH_LAYOUT ?= eagle.flash.4m.ld
 
 # Upload parameters
 UPLOAD_SPEED ?= 230400
-UPLOAD_PORT ?= /dev/ttyUSB0
+UPLOAD_PORT ?= /dev/tty.wchusbserial1410
 UPLOAD_VERB ?= -v
 
 MONITOR = `which picocom`
@@ -165,8 +168,8 @@ upload: all
 fs: $(OBJ_DIR) 
 	$(TOOLS_ROOT)/mkspiffs/mkspiffs -c fs $(FS_BIN)
 
-fs_upload: fs
-	$(ESP_TOOL) $(UPLOAD_VERB) -cd nodemcu -cb $(UPLOAD_SPEED) -cp $(UPLOAD_PORT) -ca 0xeb000 $(FS_BIN) 
+upload_fs: fs
+	$(ESP_TOOL) $(UPLOAD_VERB) -cd nodemcu -cb $(UPLOAD_SPEED) -cp $(UPLOAD_PORT) -ca 0xeb000 -cf $(FS_BIN) 
 
 clean:
 	echo Removing all intermediate build files...
@@ -180,6 +183,8 @@ all: $(OBJ_DIR) $(BUILD_INFO_H) $(MAIN_EXE)
 
 monitor:
 	$(MONITOR) -b $(MONITOR_BAUD) $(UPLOAD_PORT)
+
+run: upload monitor
 
 info: 
 	echo $(FS_BIN)

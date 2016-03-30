@@ -7,4 +7,8 @@
 void webServerSetup();
 void webServerLoop();
 
+// Request handlers
+void handleStatus();
+void handleNotFound();
+
 #endif
