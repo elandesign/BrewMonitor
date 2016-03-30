@@ -1,0 +1,7 @@
+{
+  "wifiAP": true,
+  "wifiSSID": "BREWMONITOR",
+  "wifiPassword": "",
+  "serverName": "brewmonitor",
+  "adminPassword": ""
+}
