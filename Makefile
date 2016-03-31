@@ -169,7 +169,7 @@ fs: $(OBJ_DIR)
 	$(TOOLS_ROOT)/mkspiffs/mkspiffs -c fs $(FS_BIN)
 
 upload_fs: fs
-	$(ESP_TOOL) $(UPLOAD_VERB) -cd nodemcu -cb $(UPLOAD_SPEED) -cp $(UPLOAD_PORT) -ca 0xeb000 -cf $(FS_BIN) 
+	$(ESP_TOOL) $(UPLOAD_VERB) -cd nodemcu -cb $(UPLOAD_SPEED) -cp $(UPLOAD_PORT) -ca 0x100000 -cf $(FS_BIN) 
 
 clean:
 	echo Removing all intermediate build files...

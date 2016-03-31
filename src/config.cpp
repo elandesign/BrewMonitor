@@ -10,7 +10,9 @@ void configSetup() {
       configReset();
     }
   }
-  
+
+  SPIFFS.begin();
+
   configLoad();
 }
 

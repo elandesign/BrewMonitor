@@ -2,11 +2,15 @@
 #include "web_server.h"
 #include <ArduinoJson.h>
 #include "globals.h"
+#include "FS.h"
 
 ESP8266WebServer webServer(80);
 
 void webServerSetup() {
   webServer.on("/status.json", handleStatus);
+  webServer.serveStatic("/config.json", SPIFFS, "/config.json");
+  webServer.serveStatic("/", SPIFFS, "/public/index.html");
+  webServer.serveStatic("/assets/brewMonitor.js", SPIFFS, "/public/assets/brewMonitor.js");
   webServer.onNotFound(handleNotFound);
 
   webServer.begin();
@@ -31,5 +35,5 @@ void handleStatus() {
 }
 
 void handleNotFound() {
-  webServer.send(404, "text/plain", "");
+  webServer.send(404, "text/plain", "404 - Page Not Found");
 }
