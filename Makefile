@@ -28,9 +28,9 @@ LIBS ?= libraries \
         src
 
 # Esp8266 Arduino git location
-ESP_ROOT ?= $(HOME)/Documents/Arduino/esp8266
+ESP_ROOT ?= /opt/local/esp8266
 # Output directory
-BUILD_ROOT ?= /tmp/$(MAIN_NAME)
+BUILD_ROOT ?= .build
 
 # Board definitions
 FLASH_SIZE ?= 4M
