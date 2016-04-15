@@ -1,8 +1,11 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#define SDA 4
-#define SCL 5
+#define SDA 12
+#define SCL 14
+
+#define HX711_DATA 13
+#define HX711_CLK 2
 
 extern bool wifiAP;
 extern const char *wifiSSID;

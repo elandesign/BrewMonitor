@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include <Wire.h>
 #include <Adafruit_BMP085.h>
+#include <HX711.h>
 #include "globals.h"
 
 #ifndef SENSORS_H
