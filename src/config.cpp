@@ -4,9 +4,9 @@
 #include "display.h"
 
 void configSetup() {
-  if(buttonPressed()) {
+  if(buttonPressed) {
     delay(2000); // Ideally we should monitor for pin changes, but this will do for now
-    if(buttonPressed()) {
+    if(buttonPressed) {
       configReset();
     }
   }
@@ -48,6 +48,15 @@ bool configLoad() {
 
     if(json.containsKey(CONFIGURATION_SERVER_NAME))
       serverName = json[CONFIGURATION_SERVER_NAME];
+
+    if(json.containsKey(CONFIGURATION_GRAPHITE_SERVER))
+      graphiteServer = json[CONFIGURATION_GRAPHITE_SERVER];
+
+    if(json.containsKey(CONFIGURATION_GRAPHITE_PORT))
+      graphitePort = json[CONFIGURATION_GRAPHITE_PORT];
+
+    if(json.containsKey(CONFIGURATION_GRAPHITE_METRIC))
+      graphiteMetric = json[CONFIGURATION_GRAPHITE_METRIC];
 
     return true;
   }

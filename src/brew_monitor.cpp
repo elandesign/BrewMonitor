@@ -9,6 +9,7 @@
 #include "web_server.h"
 #include "mdns.h"
 #include "sensors.h"
+#include "graphite.h"
 
 Ticker ticker;
 
@@ -26,7 +27,7 @@ void setup() {
   buttonSetup();
 
   configSetup();
-  
+
   if(wifiAP)
     wifiSetupAP();
   else {
@@ -48,6 +49,8 @@ void loop() {
   if(takeReadingsNow) {
     takeReadingsNow = false;
     sensorsRead();
+    if(graphiteServer)
+      sendReadingsToGraphite();
   }
 }
 
