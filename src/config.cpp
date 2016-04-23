@@ -49,8 +49,8 @@ bool configLoad() {
     if(json.containsKey(CONFIGURATION_SERVER_NAME))
       serverName = json[CONFIGURATION_SERVER_NAME];
 
-    if(json.containsKey(CONFIGURATION_GRAPHITE_SERVER))
-      graphiteServer = json[CONFIGURATION_GRAPHITE_SERVER];
+    // if(json.containsKey(CONFIGURATION_GRAPHITE_SERVER))
+    //   graphiteServer = json[CONFIGURATION_GRAPHITE_SERVER];
 
     if(json.containsKey(CONFIGURATION_GRAPHITE_PORT))
       graphitePort = json[CONFIGURATION_GRAPHITE_PORT];
