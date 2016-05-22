@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BrewMonitor: Settings</title>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/assets/brewMonitor.js"></script>
+</head>
+<body>
+  <form method="POST" action="/config">
+    <fieldset>
+      <legend>WiFi Settings</legend>
+      <p>
+        <label for="wifiAP">Access Point Mode</label>
+        <input id="wifiAP" type="checkbox" />
+      </p>
+      <p>
+        <label for="wifiSSID">Network Name</label>
+        <input id="wifiSSID" type="text" />
+      </p>
+      <p>
+        <label for="wifiPassword">Password</label>
+        <input id="wifiPassword" type="text" />
+      </p>
+    </fieldset>
+    <fieldset>
+      <legend>Software Update</legend>
+      <p>
+        <label for="firmware">New Firmware</label>
+        <input id="firmware" type="file" />
+      </p>
+    </fieldset>
+    <fieldset>
+      <legend>Admin</legend>
+      <p>
+        <label for="adminPassword">Password</label>
+        <input id="adminPassword" type="password" value="" />
+        <span class="note">
+          Leave blank to
+        </span>
+      </p>
+    </fieldset>
+    <p>
+      <input type="submit" value="Save Configuration" />
+    </p>
+  </form>
+</body>
+</html>

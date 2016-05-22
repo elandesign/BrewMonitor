@@ -1,0 +1,22 @@
+{
+  "name": "SSD1306",
+  "keywords": "display, oled",
+  "description": "SSD1306 Oled driver which offers scrolling frames, custom fonts, etc",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/squix78/esp8266-oled-ssd1306.git"
+  },
+  "authors": [{
+    "name": "Daniel Eichhorn",
+    "url": "http://blog.squix.ch",
+    "email": "squix78@gmail.com",
+    "maintainer": true
+  },
+  {
+    "name": "Fabrice Weinberg"
+  }
+  ],
+  "frameworks": "arduino",
+  "platforms": "espressif",
+  "version": "2.0.2"
+}
