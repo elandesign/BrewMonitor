@@ -5,9 +5,9 @@
 
 #define SDA 12
 #define SCL 14
-#define HX711_DATA 13
-#define HX711_CLK 2
-#define BUTTON 1
+#define HX711_DATA 2
+#define HX711_CLK 13
+#define BUTTON 18
 
 extern bool wifiAP;
 extern const char *wifiSSID;
