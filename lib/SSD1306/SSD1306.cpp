@@ -34,37 +34,12 @@ SSD1306::SSD1306(int i2cAddress, int sda, int sdc) {
   myI2cAddress = i2cAddress;
   mySda = sda;
   mySdc = sdc;
-  I2C_io = true;
 }
 
-// constructor for hardware SPI - we indicate Reset, DataCommand and ChipSelect 
-// (HW_SPI used to differentiate constructor - reserved for future use)
-SSD1306::SSD1306(bool HW_SPI, int rst, int dc, int cs ) {
-  myRST = rst;
-  myDC = dc;
-  myCS = cs;
-  I2C_io = false;
-}
 
 void SSD1306::init() {
-  if (I2C_io){
-   Wire.begin(mySda, mySdc);
-   Wire.setClock(400000);
-  } else {
-   pinMode(myDC, OUTPUT);
-   pinMode(myCS, OUTPUT);
-
-   SPI.begin ();
-   SPI.setClockDivider (SPI_CLOCK_DIV2);
-
-   pinMode(myRST, OUTPUT);
-   // Pulse Reset low for 10ms
-   digitalWrite(myRST, HIGH);
-   delay(1);
-   digitalWrite(myRST, LOW);
-   delay(10);
-   digitalWrite(myRST, HIGH);
-  }
+  Wire.begin(mySda, mySdc);
+  Wire.setClock(400000);
   sendInitCommands();
   resetDisplay();
 }
@@ -77,15 +52,11 @@ void SSD1306::resetDisplay(void) {
 }
 
 void SSD1306::reconnect() {
-  if (I2C_io){
-   Wire.begin(mySda, mySdc);
-  } else {
-   SPI.begin ();
-  }
+  Wire.begin(mySda, mySdc);
 }
 
 void SSD1306::displayOn(void) {
-    sendCommand(0xaf);        //display on
+  sendCommand(0xaf);        //display on
 }
 
 void SSD1306::displayOff(void) {
@@ -103,47 +74,35 @@ void SSD1306::flipScreenVertically() {
 }
 
 void SSD1306::clear(void) {
-    memset(buffer, 0, (128 * 64 / 8));
+  memset(buffer, 0, (128 * 64 / 8));
 }
 
 void SSD1306::display(void) {
-    sendCommand(COLUMNADDR);
-    sendCommand(0x0);
-    sendCommand(0x7F);
+  sendCommand(COLUMNADDR);
+  sendCommand(0x0);
+  sendCommand(0x7F);
 
-    sendCommand(PAGEADDR);
-    sendCommand(0x0);
-    sendCommand(0x7);
+  sendCommand(PAGEADDR);
+  sendCommand(0x0);
+  sendCommand(0x7);
 
-	
-  if (I2C_io) {
-    for (uint16_t i=0; i<(128*64/8); i++) {
-      // send a bunch of data in one xmission
-      Wire.beginTransmission(myI2cAddress);
-      Wire.write(0x40);
-      for (uint8_t x=0; x<16; x++) {
-        Wire.write(buffer[i]);
-        i++;
-      }
-      i--;
-      yield();
-      Wire.endTransmission();
+  for (uint16_t i=0; i<(128*64/8); i++) {
+    // send a bunch of data in one xmission
+    Wire.beginTransmission(myI2cAddress);
+    Wire.write(0x40);
+    for (uint8_t x=0; x<16; x++) {
+      Wire.write(buffer[i]);
+      i++;
     }
-  }	else {
-	digitalWrite(myCS, HIGH);
-    digitalWrite(myDC, HIGH);   // data mode
-    digitalWrite(myCS, LOW);
-	for (uint16_t i=0; i<(128*64/8); i++) {
-	 SPI.transfer(buffer[i]);
-	}
-	digitalWrite(myCS, HIGH);	
+    i--;
+    yield();
+    Wire.endTransmission();
   }
 }
 
 void SSD1306::setPixel(int x, int y) {
   if (x >= 0 && x < 128 && y >= 0 && y < 64) {
-
-     switch (myColor) {
+    switch (myColor) {
       case WHITE:   buffer[x + (y/8)*128] |=  (1 << (y&7)); break;
       case BLACK:   buffer[x + (y/8)*128] &= ~(1 << (y&7)); break;
       case INVERSE: buffer[x + (y/8)*128] ^=  (1 << (y&7)); break;
@@ -154,41 +113,42 @@ void SSD1306::setPixel(int x, int y) {
 void SSD1306::setChar(int x, int y, unsigned char data) {
   for (int i = 0; i < 8; i++) {
     if (bitRead(data, i)) {
-     setPixel(x,y + i);
+      setPixel(x,y + i);
     }
   }
 }
 
 // Code form http://playground.arduino.cc/Main/Utf8ascii
 byte SSD1306::utf8ascii(byte ascii) {
-    if ( ascii<128 ) {   // Standard ASCII-set 0..0x7F handling
-       lastChar=0;
-       return( ascii );
-    }
+  if ( ascii<128 ) {   // Standard ASCII-set 0..0x7F handling
+    lastChar=0;
+    return( ascii );
+  }
 
-    // get previous input
-    byte last = lastChar;   // get last char
-    lastChar=ascii;         // remember actual character
+  // get previous input
+  byte last = lastChar;   // get last char
+  lastChar=ascii;         // remember actual character
 
-    switch (last)     // conversion depnding on first UTF8-character
-    {   case 0xC2: return  (ascii);  break;
-        case 0xC3: return  (ascii | 0xC0);  break;
-        case 0x82: if(ascii==0xAC) return(0x80);       // special case Euro-symbol
-    }
+  switch (last)     // conversion depnding on first UTF8-character
+  {
+    case 0xC2: return  (ascii);  break;
+    case 0xC3: return  (ascii | 0xC0);  break;
+    case 0x82: if(ascii==0xAC) return(0x80);       // special case Euro-symbol
+  }
 
-    return  (0);                                     // otherwise: return zero, if character has to be ignored
+  return  (0);                                     // otherwise: return zero, if character has to be ignored
 }
 
 // Code form http://playground.arduino.cc/Main/Utf8ascii
 String SSD1306::utf8ascii(String s) {
-        String r= "";
-        char c;
-        for (int i=0; i<s.length(); i++)
-        {
-                c = utf8ascii(s.charAt(i));
-                if (c!=0) r+=c;
-        }
-        return r;
+  String r= "";
+  char c;
+  for (int i=0; i<s.length(); i++)
+  {
+    c = utf8ascii(s.charAt(i));
+    if (c!=0) r+=c;
+  }
+  return r;
 }
 
 void SSD1306::drawString(int x, int y, String text) {
@@ -227,7 +187,6 @@ void SSD1306::drawString(int x, int y, String text) {
     currentCharStartPos = CHAR_WIDTH_START_POS + numberOfChars;
 
     for (int m = 0; m < charCode; m++) {
-
       currentCharStartPos += pgm_read_byte(myFontData + CHAR_WIDTH_START_POS + m)  * charHeight / 8 + 1;
     }
 
@@ -239,22 +198,20 @@ void SSD1306::drawString(int x, int y, String text) {
       //Serial.println(String(charCode) + ", " + String(currentCharWidth) + ", " + String(currentByte));
       // iterate over all bytes of character
       for(int bit = 0; bit < 8; bit++) {
-         //int currentBit = bitRead(currentByte, bit);
+        //int currentBit = bitRead(currentByte, bit);
 
-         currentBitCount = i * 8 + bit;
+        currentBitCount = i * 8 + bit;
 
-         charX = currentBitCount % currentCharWidth;
-         charY = currentBitCount / currentCharWidth;
+        charX = currentBitCount % currentCharWidth;
+        charY = currentBitCount / currentCharWidth;
 
-         if (bitRead(currentByte, bit)) {
+        if (bitRead(currentByte, bit)) {
           setPixel(startX + cursorX + charX, startY + charY);
-         }
-
+        }
       }
       yield();
     }
     cursorX += currentCharWidth;
-
   }
 }
 
@@ -273,7 +230,6 @@ void SSD1306::drawStringMaxWidth(int x, int y, int maxLineWidth, String text) {
       if (getStringWidth(lineCandidate) <= maxLineWidth) {
         endsAt = i;
       } else {
-
         drawString(x, y + lineNumber * lineHeight, text.substring(startsAt, endsAt));
         lineNumber++;
         startsAt = endsAt + 1;
@@ -356,18 +312,10 @@ void SSD1306::drawXbm(int x, int y, int width, int height, const char *xbm) {
 }
 
 void SSD1306::sendCommand(unsigned char com) {
-  if (I2C_io) {
-   Wire.beginTransmission(myI2cAddress);      //begin transmitting
-   Wire.write(0x80);                          //command mode
-   Wire.write(com);
-   Wire.endTransmission();                    // stop transmitting
-  } else {
-   digitalWrite(myCS, HIGH);
-   digitalWrite(myDC, LOW);                     //command mode
-   digitalWrite(myCS, LOW);
-   SPI.transfer(com);
-   digitalWrite(myCS, HIGH);
-  }
+  Wire.beginTransmission(myI2cAddress);      //begin transmitting
+  Wire.write(0x80);                          //command mode
+  Wire.write(com);
+  Wire.endTransmission();                    // stop transmitting
 }
 
 void SSD1306::sendInitCommands(void) {
